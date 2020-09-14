@@ -39,7 +39,7 @@ static int pthread_search(const char *pathname, const struct stat *statbuf, int 
     printf("%s\n", pathname);
     pthread_testcancel();
 
-    if (!strcmp(basename(pathname), keyword)) {
+    if (typeflag==FTW_F && !strcmp(basename(pathname), keyword)) {
         
         pthread_cleanup_push(CleanUp, NULL);
 
