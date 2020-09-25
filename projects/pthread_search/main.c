@@ -15,9 +15,6 @@
 #include <dirent.h>
 #include <ftw.h>
 
-/**обработка символических ссылок, искомое имя необязательно файл**/
-/**возможности не срабатывают на содержимое .dbus **/
-
 static pthread_mutex_t mtx = PTHREAD_MUTEX_INITIALIZER;
 static pthread_cond_t cond = PTHREAD_COND_INITIALIZER;
 
