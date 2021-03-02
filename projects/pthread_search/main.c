@@ -93,23 +93,6 @@ static int firstcall(const char *pathname, const struct stat *statbuf, int typef
 }
 
 int main(int argc, char *argv[]) {
-    /**--Настройка возможностей--
-    cap_t cap;
-    cap_value_t caplist = CAP_DAC_READ_SEARCH;
-
-    cap = cap_get_proc();
-    if (cap==NULL)
-        err_msg("cap_get_proc");
-
-    if (cap_set_flag(cap, CAP_EFFECTIVE, 1, &caplist, CAP_SET)==-1)
-        err_msg("cap_set_flag");
-
-    if (cap_set_proc(cap)==-1)
-        err_msg("cap_set_proc");
-
-    if (cap_free(cap)==-1)
-        err_msg("cap_free");
-    **/
 
     keyword = argv[2];
 
