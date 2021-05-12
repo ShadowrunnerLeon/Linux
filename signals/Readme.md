@@ -1,36 +1,18 @@
-Not_reenterable.c - пример нереентерабельности
-
-RTSIGNAL.c - сигналы реального времени
-
-RTSIGNAL_STANDARTSIGNAL.c - обычные сигналы и сигналы реального времени
-
-SA_RESETHAND.c - старое поведение обработчика сигналов
-
-SA_RESTART.c - перезапуск прерванных системных вызовов
-
-SIGCONT.c - если установить обработчик на SIGCONT и добавить данный сигнал в маску, а затем приостановить процесс с помощью SIGSTOP, то стандартный обработчик 
-SIGCONT сработает, а пользовательский - только после разблокировки
-
-abort_implementation.c - реализация abort
-
-alternative_stack.c - альтернативный стек для обработчика
-
-fork_kill.c - обмен сигналами между процессами
-
-prevsigmask.c - просмотр предыдущей маски сигналов
-
-sigaction.c - пример вызова sigacion()
-
-siginfo.c - просмотр информации о сигнале
-
-sigmask.c - установка маски сигналов
-
-signal.c - пример вызова singal()
-
-signalfd.c - пример вызова signalfd()
-
-sigsetjmp_siglongjmp.c - пример нелокального перехода из обработчика сигналов
-
-sigsuspend.c - сравнение времени работы sigsuspend() и sigwaitinfo()
-
-sigtimedwait.c - пример вызова sigtimedwait()
+ - Not_reenterable.c - пример нереентерабельности
+ - RTSIGNAL.c - сигналы реального времени
+ - RTSIGNAL_STANDARTSIGNAL.c - обычные сигналы и сигналы реального времени
+ - SA_RESETHAND.c - старое поведение обработчика сигналов
+ - SA_RESTART.c - перезапуск прерванных системных вызовов
+ - SIGCONT.c - если установить обработчик на SIGCONT и добавить данный сигнал в маску, а затем приостановить процесс с помощью SIGSTOP, то стандартный обработчик SIGCONT сработает, а пользовательский - только после разблокировки
+ - abort_implementation.c - реализация abort
+ - alternative_stack.c - альтернативный стек для обработчика
+ - fork_kill.c - обмен сигналами между процессами
+ - prevsigmask.c - просмотр предыдущей маски сигналов
+ - sigaction.c - пример вызова sigacion()
+ - siginfo.c - просмотр информации о сигнале
+ - sigmask.c - установка маски сигналов
+ - signal.c - пример вызова singal()
+ - signalfd.c - пример вызова signalfd()
+ - sigsetjmp_siglongjmp.c - пример нелокального перехода из обработчика сигналов
+ - sigsuspend.c - сравнение времени работы sigsuspend() и sigwaitinfo()
+ - sigtimedwait.c - пример вызова sigtimedwait()
