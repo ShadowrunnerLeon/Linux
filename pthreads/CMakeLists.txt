@@ -16,9 +16,6 @@ target_link_libraries(pthread_cleanup ${CMAKE_THREAD_LIBS_INIT})
 add_executable(pthread_cond pthread_cond.c)
 target_link_libraries(pthread_cond ${CMAKE_THREAD_LIBS_INIT})
 
-add_executable(pthread_dirname_basename pthread_dirname_basename.c)
-target_link_libraries(pthread_dirname_basename ${CMAKE_THREAD_LIBS_INIT})
-
 add_executable(pthread_join pthread_join.c)
 target_link_libraries(pthread_join ${CMAKE_THREAD_LIBS_INIT})
 
@@ -42,3 +39,15 @@ target_link_libraries(pthread_signal ${CMAKE_THREAD_LIBS_INIT})
 
 add_executable(pthread_strerror_dlt pthread_strerror_dlt.c)
 target_link_libraries(pthread_strerror_dlt ${CMAKE_THREAD_LIBS_INIT})
+
+add_executable(process_semaphore process_semaphore.c)
+target_link_libraries(process_semaphore ${CMAKE_THREAD_LIBS_INIT})
+
+add_executable(semaphore semaphore.c)
+target_link_libraries(semaphore ${CMAKE_THREAD_LIBS_INIT})
+
+add_executable(spinlock spinlock.c)
+target_link_libraries(spinlock ${CMAKE_THREAD_LIBS_INIT})
+
+add_executable(rwlock rwlock.c)
+target_link_libraries(rwlock ${CMAKE_THREAD_LIBS_INIT})
