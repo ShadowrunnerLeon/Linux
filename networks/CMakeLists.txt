@@ -21,3 +21,5 @@ add_executable(unix_udp_server unix_udp_server.c)
 add_executable(unix_udp_server_abstract unix_udp_server_abstract.c)
 
 add_executable(unix_udp_server_connected unix_udp_server_connected.c)
+
+add_executable(httpServer httpServer.c)

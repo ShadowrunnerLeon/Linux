@@ -6,3 +6,4 @@
  - unix_udp_server, unix_udp_client - примеры udp-сервера и udp-клиента в unix-домене
  - unix_udp_server_connected, unix_udp_client_connected - соединённые unix-udp-сервер и unix-udp-клиент с помощью вызова connect()
  - unix_udp_server_abstract - пример использования абстрактного пространства имён сокетов
+ - httpServer - пример кастомного http-сервера (пока обрабатывает только GET-запросы)
