@@ -9,24 +9,26 @@
 #include <unistd.h>
 #include <fcntl.h>
 
-void err_msg(char *str) {
-    perror(str);
-    exit(-1);
-};
+void err_msg(char *msg) 
+{
+    perror(msg);
+    exit(EXIT_FAILURE);
+}
 
-void sighandler(int sig) {
+void sighandler(int sig) 
+{
     write(1, "SIGFPE", sizeof("SIGFPE"));
-};
+}
 
 struct sigaction sa;
 
-int main() {
+int main() 
+{
     sa.sa_handler = sighandler;
     sa.sa_flags = SA_RESETHAND;
 
-    if (sigaction(SIGFPE, &sa, NULL)==-1)
-       err_msg("sigaction");
+    if (sigaction(SIGFPE, &sa, NULL) == -1) err_msg("sigaction");
 
-    int a=0;
-    printf("%d", 5/a);
+    int a = 0;
+    printf("%d", 5 / a);
 }

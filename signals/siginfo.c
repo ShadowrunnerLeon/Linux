@@ -13,29 +13,30 @@
 #include <setjmp.h>
 #include <limits.h>
 
-void err_msg(char *str) {
-    perror(str);
-    exit(-1);
-};
+void err_msg(char *msg) 
+{
+    perror(msg);
+    exit(EXIT_FAILURE);
+}
 
-void sighandler(int sig, siginfo_t *siginfo, void *ucontext) {
+void sighandler(int sig, siginfo_t *siginfo, void *ucontext) 
+{
     printf("Sighandler!\n");
     printf("Signal number: %d\n", siginfo->si_signo);
 
-    if (siginfo->si_code==FPE_INTDIV)
-        printf("Signal code: Int/0\n");
+    if (siginfo->si_code == FPE_INTDIV) printf("Signal code: Int/0\n");
         
-    exit(-1);
-};
+    exit(EXIT_FAILURE);
+}
 
-int main() {
+int main() 
+{
     struct sigaction sa;
     sa.sa_sigaction = sighandler;
     sa.sa_flags = SA_SIGINFO;
     sigemptyset(&sa.sa_mask);
 
-    if (sigaction(SIGFPE, &sa, NULL)==-1)
-        err_msg("sigaction");
+    if (sigaction(SIGFPE, &sa, NULL) == -1) err_msg("sigaction");
 
     int dig1 = 5, dig2 = 0;
     printf("%d", dig1/dig2);

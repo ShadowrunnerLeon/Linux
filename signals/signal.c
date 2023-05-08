@@ -12,25 +12,20 @@
 
 extern const char *const sys_siglist[];
 
-//Глобальный флаг обработчика
-//volatile sig_atomic_t flag; 
+void sighandler(int sig) 
+{
+    printf(sig == SIGSEGV ? "Segfault!\n" : "SIGFPE!\n");
+    exit(EXIT_FAILURE);
+}
 
-void sighandler(int sig) {
-    if (sig==SIGSEGV)
-       printf("Segfault!\n");
-    else
-       printf("SIGFPE!\n");
+void err_msg(char *msg) 
+{
+    perror(msg);
+    exit(EXIT_FAILURE);
+}
 
-    exit(-1);
-};
-
-void err_msg(char *str) {
-    perror(str);
-    exit(-1);
-};
-
-int main() {
-
+int main() 
+{
     //-------SIGSEGV---------//
     //int *dig;
     //printf("%d", *dig);
