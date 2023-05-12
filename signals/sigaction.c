@@ -49,7 +49,7 @@ int main()
             if (kill(getppid(), SIGUSR1) == -1) err_msg("kill");
         }
 
-        exit(0);
+        exit(EXIT_SUCCESS);
     }
 
     raise(SIGUSR1);

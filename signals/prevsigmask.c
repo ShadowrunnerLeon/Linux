@@ -9,42 +9,38 @@
 #include <unistd.h>
 #include <fcntl.h>
 
-void err_msg(char *str) {
-    perror(str);
-    exit(-1);
-};
+void err_msg(char *msg) 
+{
+    perror(msg);
+    exit(EXIT_FAILURE);
+}
 
-int main() {
+int main() 
+{
     sigset_t set, prevset;
 
-    if (sigemptyset(&set)==-1)
-        err_msg("sigemptyset");
+    if (sigemptyset(&set) == -1) err_msg("sigemptyset");
+    if (sigemptyset(&prevset) == -1) err_msg("sigemptyset");
 
-    if (sigemptyset(&prevset)==-1)
-        err_msg("sigemptyset");
+    if (sigaddset(&set, SIGFPE) == -1) err_msg("sigaddset");
+    if (sigaddset(&set, SIGSEGV) == -1) err_msg("sigaddset");
+    if (sigaddset(&set, SIGINT) == -1) err_msg("sigaddset");
 
-    if (sigaddset(&set, SIGFPE)==-1)
-        err_msg("sigaddset");
-
-    if (sigaddset(&set, SIGSEGV)==-1)
-        err_msg("sigaddset");
-
-    if (sigaddset(&set, SIGINT)==-1)
-        err_msg("sigaddset");
-
-    if (sigprocmask(SIG_SETMASK, &set, &prevset)==-1)
-        err_msg("sigprocmask");
+    if (sigprocmask(SIG_SETMASK, &set, &prevset) == -1) err_msg("sigprocmask");
 
     printf("Set is empty\n");
 
-    if (sigprocmask(SIG_UNBLOCK, &set, &prevset)==-1)
-        err_msg("sigprocmask");
+    if (sigprocmask(SIG_UNBLOCK, &set, &prevset) == -1) err_msg("sigprocmask");
 
     int count = 0;
-    for (int sig=1; sig<NSIG; sig++)
-        if (sigismember(&prevset, sig))
-            count++;
+    for (int sig = 1; sig < NSIG; ++sig)
+    {
+        if (sigismember(&prevset, sig)) ++count;
+    }
 
-    if (count==3 && sigismember(&prevset, SIGFPE) && sigismember(&prevset, SIGSEGV) && sigismember(&prevset, SIGINT))
-       printf("prevset=set\n");
+    if (count == 3 && sigismember(&prevset, SIGFPE) && 
+        sigismember(&prevset, SIGSEGV) && sigismember(&prevset, SIGINT))
+    {
+        printf("prevset=set\n");
+    } 
 }

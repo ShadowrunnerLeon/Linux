@@ -46,7 +46,7 @@ int main()
     else if (!pid) 
     {
         if (kill(getppid(), SIGCONT) == -1) err_msg("kill");
-        exit(0);
+        exit(EXIT_SUCCESS);
     }
 
     raise(SIGSTOP);

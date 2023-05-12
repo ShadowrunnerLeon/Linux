@@ -13,54 +13,45 @@
 #include <errno.h>
 #include <setjmp.h>
 
-void err_msg(char *str) {
-    perror(str);
-    exit(-1);
-};
+void err_msg(char *msg) 
+{
+    perror(msg);
+    exit(EXIT_FAILURE);
+}
 
-void standart_sighandler(int sig) {
-    if (sig==SIGUSR1)
-        printf("SIGUSR1\n");
-    else if (sig==SIGUSR2)
-        printf("SIGUSR2\n");
-    else if (sig==SIGINT)
-        printf("SIGINT\n");
-};
+void standart_sighandler(int sig) 
+{
+    switch (sig)
+    {
+        case SIGUSR1: printf("SIGUSR1\n"); break;
+        case SIGUSR2: printf("SIGUSR2\n"); break;
+        case SIGINT: printf("SIGINT\n"); break;
+    }
+}
 
-void rt_sighandler(int sig, siginfo_t *siginfo, void *ucontext) {
-    if (sig==SIGRTMIN+1)
-        printf("SIGRTMIN+1\n");
-    else
-        printf("SIGRTMIN+2\n");
-};
+void rt_sighandler(int sig, siginfo_t *siginfo, void *ucontext) 
+{
+    printf(sig == SIGRTMIN+1 ? "SIGRTMIN+1\n" : "SIGRTMIN+2\n");
+}
 
-int main() {
+int main() 
+{
     struct sigaction st_sa;
     st_sa.sa_flags = SA_RESTART;
     st_sa.sa_handler = standart_sighandler;
     sigemptyset(&st_sa.sa_mask);
 
-    if (sigaction(SIGUSR1, &st_sa, NULL)==-1)
-        err_msg("sigaction");
-
-    if (sigaction(SIGUSR2, &st_sa, NULL)==-1)
-        err_msg("sigaction");
-
-    if (sigaction(SIGINT, &st_sa, NULL)==-1)
-        err_msg("sigaction");
-
+    if (sigaction(SIGUSR1, &st_sa, NULL) == -1) err_msg("sigaction");
+    if (sigaction(SIGUSR2, &st_sa, NULL) == -1) err_msg("sigaction");
+    if (sigaction(SIGINT, &st_sa, NULL) == -1) err_msg("sigaction");
 
     struct sigaction rt_sa;
     rt_sa.sa_flags = SA_RESTART;
     rt_sa.sa_sigaction = rt_sighandler;
     sigemptyset(&rt_sa.sa_mask);
 
-    if (sigaction(SIGRTMIN+1, &rt_sa, NULL)==-1)
-        err_msg("sigaction");
-
-    if (sigaction(SIGRTMIN+2, &rt_sa, NULL)==-1)
-        err_msg("sigaction");
-
+    if (sigaction(SIGRTMIN+1, &rt_sa, NULL) == -1) err_msg("sigaction");
+    if (sigaction(SIGRTMIN+2, &rt_sa, NULL) == -1) err_msg("sigaction");
 
     sigset_t sigmask;
     sigemptyset(&sigmask);
@@ -70,46 +61,39 @@ int main() {
     sigaddset(&sigmask, SIGRTMIN+1);
     sigaddset(&sigmask, SIGRTMIN+2);
 
-    if (sigprocmask(SIG_SETMASK, &sigmask, NULL)==-1)
-        err_msg("sigprocmask");
-
+    if (sigprocmask(SIG_SETMASK, &sigmask, NULL) == -1) err_msg("sigprocmask");
 
     pid_t pid = fork();
-    if (pid==-1)
+    if (pid == -1)
+    {
         err_msg("fork");
-    else if (pid==0) {
-        if (kill(getppid(), SIGUSR1)==-1)
-            err_msg("kill");
-
-        if (kill(getppid(), SIGUSR2)==-1)
-            err_msg("kill");
-
-        if (kill(getppid(), SIGINT)==-1)
-            err_msg("kill");
+    }
+    else if (!pid) 
+    {
+        if (kill(getppid(), SIGUSR1) == -1) err_msg("kill");
+        if (kill(getppid(), SIGUSR2) == -1) err_msg("kill");
+        if (kill(getppid(), SIGINT) == -1) err_msg("kill");
 
         union sigval value;
         value.sival_int = 10;
 
-        if (sigqueue(getppid(), SIGRTMIN+1, value)==-1)
-            err_msg("sigqueue");
+        if (sigqueue(getppid(), SIGRTMIN+1, value) == -1) err_msg("sigqueue");
+        if (sigqueue(getppid(), SIGRTMIN+2, value) == -1) err_msg("sigqueue");
 
-        if (sigqueue(getppid(), SIGRTMIN+2, value)==-1)
-            err_msg("sigqueue");
-
-        exit(0);
-    };
-
+        exit(EXIT_SUCCESS);
+    }
 
     sleep(1);
-    if (sigprocmask(SIG_UNBLOCK, &sigmask, NULL)==-1)
-        err_msg("sigprocmask");
-
+    if (sigprocmask(SIG_UNBLOCK, &sigmask, NULL) == -1) err_msg("sigprocmask");
 
     int status, waitpid;
-    while ((waitpid=wait(&status)==-1) && errno==EINTR) {};
+    while ((waitpid = wait(&status) == -1) && errno == EINTR) {}
     if (WIFEXITED(status))
+    {
         printf("Child returned!\n");
+    }
     else if (WIFSIGNALED(status))
+    {
         printf("Child interrupted by signal!");
-
+    }
 }

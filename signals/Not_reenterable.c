@@ -11,46 +11,51 @@
 #include <fcntl.h>
 #include <errno.h>
 
-char *str = "Hello!";
+char *text = "Hello!";
 
-void sighandler(int sig) {
-    str = "Sighandler!";
-};
+void sighandler(int sig) 
+{
+    text = "Sighandler!";
+}
 
-void err_msg(char *str) {
-    perror(str);
-    exit(-1);
-};
+void err_msg(char *msg) 
+{
+    perror(msg);
+    exit(EXIT_FAILURE);
+}
 
-int main() {
-
-    if (signal(SIGUSR1, sighandler)==SIG_ERR)
-        err_msg("signal");
+int main() 
+{
+    if (signal(SIGUSR1, sighandler) == SIG_ERR) err_msg("signal");
 
     pid_t pid = fork();
 
-    if (pid==-1)
+    if (pid == -1)
+    {
         err_msg("fork");
-    else if (!pid) {
-        if (kill(getppid(), SIGUSR1)==-1)
-           err_msg("kill");
-        exit(0);
-    };
+    }
+    else if (!pid) 
+    {
+        if (kill(getppid(), SIGUSR1) == -1) err_msg("kill");
+        exit(EXIT_SUCCESS);
+     }
 
-    printf("%s\n", str);
-    printf("%s\n", str);
-    printf("%s\n", str);
+    printf("%s\n", text);
+    printf("%s\n", text);
+    printf("%s\n", text);
 
     int status, waitpid;
 
-    while ((waitpid=wait(&status))==-1 && errno==EINTR) {};
+    while ((waitpid=wait(&status)) == -1 && errno == EINTR) {}
 
-    if (waitpid==-1)
-        err_msg("wait");
+    if (waitpid == -1) err_msg("wait");
 
     if (WIFEXITED(status))
+    {
         printf("Child returned\n");
+    }
     else if (WIFSIGNALED(status))
+    {
         printf("Child interrupted by signal");
-
+    }
 }

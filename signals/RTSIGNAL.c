@@ -69,7 +69,7 @@ int main()
             ++value.sival_int;
         }
 
-        exit(0);
+        exit(EXIT_SUCCESS);
     }
 
     sleep(2);

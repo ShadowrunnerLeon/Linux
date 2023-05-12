@@ -62,7 +62,7 @@ int main()
             sleep(1);
         }
 
-        exit(0);
+        exit(EXIT_SUCCESS);
     }
 
     if (!sigsetjmp(senv, 1)) flagJump = 1;
