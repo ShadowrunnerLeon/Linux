@@ -10,20 +10,20 @@
 #include <sys/wait.h>
 #include <errno.h>
 
-void err_msg(char *str) {
-    perror(str);
-    exit(-1);
-};
-
-void *thread_func(void *arg) {
-    if (pthread_join(pthread_self(), NULL))
-        err_msg("pthread_join");
+void err_msg(char *msg) 
+{
+    perror(msg);
+    exit(EXIT_FAILURE);
 }
 
-int main() {
-    pthread_t pthread;
-    if (pthread_create(&pthread, NULL, thread_func, NULL))
-        err_msg("pthread_create");
+void *thread_func(void *arg) 
+{
+    if (pthread_join(pthread_self(), NULL)) err_msg("pthread_join");
+}
 
+int main() 
+{
+    pthread_t pthread;
+    if (pthread_create(&pthread, NULL, thread_func, NULL)) err_msg("pthread_create");
     pthread_exit(NULL);
 }
