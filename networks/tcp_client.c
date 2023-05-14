@@ -15,12 +15,14 @@
 #define BACKLOG 10
 #define PORT    "80"
 
-void err_msg(char *msg) {
+void err_msg(char *msg) 
+{
     perror(msg);
-    exit(-1);
+    exit(EXIT_FAILURE);
 }
 
-int main() {
+int main() 
+{
     int sockfd;
     struct addrinfo hints, *res, *p; 
     
@@ -29,18 +31,22 @@ int main() {
     hints.ai_socktype = SOCK_STREAM;
 
     int rv;
-    if ((rv = getaddrinfo(INADDR_ANY, PORT, &hints, &res))!=0) {
+    if ((rv = getaddrinfo(INADDR_ANY, PORT, &hints, &res)) != 0) 
+    {
         printf("getaddrinfo: %s\n", gai_strerror(rv));
-        exit(-1);
+        exit(EXIT_FAILURE);
     }
 
-    for (p = res; p!=NULL; p = p->ai_next) {
-        if ((sockfd = socket(p->ai_family, p->ai_socktype, p->ai_protocol))==-1) {
+    for (p = res; p != NULL; p = p->ai_next) 
+    {
+        if ((sockfd = socket(p->ai_family, p->ai_socktype, p->ai_protocol)) == -1) 
+        {
             perror("server: sockfd");
             continue;
         }
 
-        if (connect(sockfd, (struct sockaddr*)p->ai_addr, p->ai_addrlen) == -1) {
+        if (connect(sockfd, (struct sockaddr*)p->ai_addr, p->ai_addrlen) == -1) 
+        {
             close(sockfd);
             perror("connect");
             continue;
@@ -49,30 +55,31 @@ int main() {
         break;
     }
 
-    if (p==NULL) {
+    if (!p) 
+    {
         printf("p: null pointer\n");
-        exit(-1);
+        exit(EXIT_FAILURE);
     }
 
     freeaddrinfo(res);
 
     int numbytes;
     char buf[BUFSIZE];
-    if ((numbytes = recv(sockfd, buf, BUFSIZE, 0))==-1) {
+    if ((numbytes = recv(sockfd, buf, BUFSIZE, 0)) == -1) 
+    {
         perror("recv");
-        exit(-1);
+        exit(EXIT_FAILURE);
     }
 
     buf[numbytes] = '\0';
 
     printf("Client received: %s\n", buf);
 
-    if (send(sockfd, "Hello, server!", 15, 0)==-1) {
+    if (send(sockfd, "Hello, server!", 15, 0) == -1) 
+    {
         perror("send");
-        exit(-1);
+        exit(EXIT_FAILURE);
     }
 
-    if (close(sockfd) == -1)
-        err_msg("close");
-
+    if (close(sockfd) == -1) err_msg("close");
 }

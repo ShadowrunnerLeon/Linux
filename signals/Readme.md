@@ -11,7 +11,6 @@
  - sigaction.c - пример вызова sigacion()
  - siginfo.c - просмотр информации о сигнале
  - sigmask.c - установка маски сигналов
- - signal.c - пример вызова singal()
  - signalfd.c - пример вызова signalfd()
  - sigsetjmp_siglongjmp.c - пример нелокального перехода из обработчика сигналов
  - sigsuspend.c - сравнение времени работы sigsuspend() и sigwaitinfo()

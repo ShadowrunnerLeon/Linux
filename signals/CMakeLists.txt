@@ -13,12 +13,11 @@ add_executable(sigaction sigaction.c)
 add_executable(SIGCONT SIGCONT.c)
 add_executable(siginfo siginfo.c)
 add_executable(sigmask sigmask.c)
-add_executable(signal signal.c)
 add_executable(sigsetjmp_siglongjmp sigsetjmp_siglongjmp.c)
 add_executable(sigsuspend sigsuspend.c)
 add_executable(sigtimedwait sigtimedwait.c)
 
-#set(GLOB Sources abort_implementation.c alternative_stack.c fork_kill.c Not_reenterable.c prevsigmask.c RTSIGNAL.c RTSIGNAL_STANDARTSIGNAL.c SA_RESETHAND.c SA_RESTART.c sigaction.c SIGCONT.c siginfo.c sigmask.c signal.c signalfd.c sigsetjmp_siglongjmp.c sigsuspend.c sigtimedwait.c)
+#set(GLOB Sources abort_implementation.c alternative_stack.c fork_kill.c Not_reenterable.c prevsigmask.c RTSIGNAL.c RTSIGNAL_STANDARTSIGNAL.c SA_RESETHAND.c SA_RESTART.c sigaction.c SIGCONT.c siginfo.c sigmask.c signalfd.c sigsetjmp_siglongjmp.c sigsuspend.c sigtimedwait.c)
 
 #foreach(source ${Sources})
 #    string(REPLACE ".c" "" main ${source})

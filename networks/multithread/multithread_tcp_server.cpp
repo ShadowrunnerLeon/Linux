@@ -12,31 +12,30 @@
 #define BACKLOG 5
 #define BUFSIZE 255
 
-using namespace std;
-
-void err_msg(string msg) {
+void err_msg(std::string msg) 
+{
     perror(msg.c_str());
-    exit(-1);
-};
+    exit(EXIT_FAILURE);
+}
 
-void thread_func(int id, int sendfd) {
-    cout << "thread[" << id << "]: server connected with client, sending message" << endl;
-    if (send(sendfd, "Hello, client!", 15, 0)==-1) 
-        err_msg("send");
+void thread_func(int id, int sendfd) 
+{
+    std::cout << "thread[" << id << "]: server connected with client, sending message" << std::endl;
+    if (send(sendfd, "Hello, client!", 15, 0) == -1) err_msg("send");
 
-    cout << "thread[" << id << "]: server ready to receving" << endl;
+    std::cout << "thread[" << id << "]: server ready to receving" << std::endl;
 
     int numbytes;
     char buf[BUFSIZE];
-    if ((numbytes = recv(sendfd, buf, BUFSIZE, 0))==-1) 
-        err_msg("recv");
+    if ((numbytes = recv(sendfd, buf, BUFSIZE, 0)) == -1) err_msg("recv");
 
     buf[numbytes] = '\0';
 
-    cout << "thread[" << id << "]: server received: " << buf << endl;
-};
+    std::cout << "thread[" << id << "]: server received: " << buf << std::endl;
+}
 
-class Server {
+class Server 
+{
     private:
         int sfd;
         struct addrinfo hints;
@@ -44,54 +43,63 @@ class Server {
         char *port, *msg;
 
     public:
-        Server() {
+        Server() 
+        {
             hints.ai_family = AF_UNSPEC;
             hints.ai_socktype = SOCK_STREAM;
             hints.ai_flags = AI_PASSIVE;
-            thread_count = thread::hardware_concurrency();
-        };
+            thread_count = std::thread::hardware_concurrency();
+        }
 
-        Server(int ipv, char *addr) {
-            if (ipv == 4)
-                hints.ai_family = AF_INET;
-            else if (ipv == 6)
-                hints.ai_family = AF_INET6;
-            else
-                hints.ai_family = AF_UNSPEC;
+        Server(int ipv, char *addr) 
+        {
+            switch(ipv)
+            {
+                case 4: hints.ai_family = AF_INET; break;
+                case 6: hints.ai_family = AF_INET6; break;
+                default: hints.ai_family = AF_UNSPEC;
+            }
 
             hints.ai_socktype = SOCK_STREAM;
-        };
+        }
 
-        void Start() {
+        void Start() 
+        {
             struct addrinfo *res, *p;
             int rv;
 
-            if (hints.ai_flags == AI_PASSIVE) {
-                if ((rv = getaddrinfo(NULL, PORT, &hints, &res)) != 0) {
+            if (hints.ai_flags == AI_PASSIVE) 
+            {
+                if ((rv = getaddrinfo(NULL, PORT, &hints, &res)) != 0) 
+                {
                     printf("getaddrinfo: %s\n", gai_strerror(rv));
-                    exit(-1);
+                    exit(EXIT_FAILURE);
                 }
             }
-            else {
-                if ((rv = getaddrinfo((char*)hints.ai_addr->sa_data, port, &hints, &res)) != 0) {
+            else 
+            {
+                if ((rv = getaddrinfo((char*)hints.ai_addr->sa_data, port, &hints, &res)) != 0) 
+                {
                     printf("getaddrinfo: %s\n", gai_strerror(rv));
-                    exit(-1);
+                    exit(EXIT_FAILURE);
                 }
             }
 
 
-            for (p = res; p != nullptr; p = p->ai_next) {
-                if ((sfd = socket(p->ai_family, p->ai_socktype, p->ai_protocol))==-1) {
+            for (p = res; p != nullptr; p = p->ai_next) 
+            {
+                if ((sfd = socket(p->ai_family, p->ai_socktype, p->ai_protocol)) == -1) 
+                {
                     perror("server: sfd");
                     continue;
                 }
 
                 int yes = 1;
-                if (setsockopt(sfd, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(int))==-1) 
-                    err_msg("setsockopt");
+                if (setsockopt(sfd, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(int)) == -1) err_msg("setsockopt");
                 
         
-                if (bind(sfd, p->ai_addr, p->ai_addrlen)==-1) {
+                if (bind(sfd, p->ai_addr, p->ai_addrlen) == -1) 
+                {
                     close(sfd);
                     perror("server: bind");
                     continue;
@@ -100,50 +108,51 @@ class Server {
                 break;
             }
 
-            if (p == nullptr) {
+            if (!p) 
+            {
                 printf("p: null pointer\n");
-                exit(-1);
+                exit(EXIT_FAILURE);
             }
 
             freeaddrinfo(res);
 
-            if (listen(sfd, BACKLOG)==-1) 
-                err_msg("listen");
-              
-        };
+            if (listen(sfd, BACKLOG) == -1) err_msg("listen");
+        }
 
-        void Service() {
-            vector <thread> threads;
+        void Service() 
+        {
+            std::vector<std::thread> threads;
             int sendfd[thread_count];
 
-            for (int i=0; i<thread_count; ++i) {
-                if ((sendfd[i] = accept(sfd, NULL, 0))==-1) 
-                    err_msg("accept");
+            for (int i = 0; i < thread_count; ++i) 
+            {
+                if ((sendfd[i] = accept(sfd, NULL, 0)) == -1) err_msg("accept");
 
-                thread thr(thread_func, i, sendfd[i]);
-                threads.emplace_back(move(thr));
+                std::thread thr(thread_func, i, sendfd[i]);
+                threads.emplace_back(std::move(thr));
             }
 
-            for (auto &thr : threads)
-                thr.join();
+            for (auto &thr : threads) thr.join();
 
             for (int i = 0; i < thread_count; ++i)
-                if (close(sendfd[i]) == -1)
-                    err_msg("close");
-        };
+            {
+                if (close(sendfd[i]) == -1) err_msg("close");
+            }
+        }
 
-        void Stop() {
-            if (close(sfd) == -1) 
-                err_msg("close");
-        };
+        void Stop() 
+        {
+            if (close(sfd) == -1) err_msg("close");
+        }
 };
 
-int main() {
-    Server *serv = new Server();
-    cout << "Server start" << endl;
-    serv->Start();
-    cout << "Server handle requests" << endl;
-    serv->Service();
-    cout << "Server stop" << endl;
-    serv->Stop();
+int main() 
+{
+    Server server;
+    std::cout << "Server starts" << std::endl;
+    server.Start();
+    std::cout << "Server handles requests" << std::endl;
+    server.Service();
+    std::cout << "Server stops" << std::endl;
+    server.Stop();
 }

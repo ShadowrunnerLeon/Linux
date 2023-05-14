@@ -13,13 +13,15 @@
 #define BUFSIZE 255
 #define PORT    "80"
 
-void *get_addr(struct sockaddr *sa) {
+void *get_addr(struct sockaddr *sa) 
+{
     if (sa->sa_family==AF_INET)
         return &(((struct sockaddr_in*)sa)->sin_addr);
     return &(((struct sockaddr_in6*)sa)->sin6_addr);
 };
 
-int main(int argc, char* argv[]) {
+int main(int argc, char* argv[]) 
+{
     int sockfd;
     struct addrinfo hints, *res, *p;
 
@@ -28,13 +30,16 @@ int main(int argc, char* argv[]) {
     hints.ai_socktype = SOCK_DGRAM;
 
     int rv;
-    if ((rv = getaddrinfo(INADDR_ANY, PORT, &hints, &res))!=0) {
+    if ((rv = getaddrinfo(INADDR_ANY, PORT, &hints, &res)) != 0) 
+    {
         printf("getaddrinfo: %s\n", gai_strerror(rv));
-        exit(-1);
+        exit(EXIT_FAILURE);
     }
 
-    for (p = res; p!=NULL; p = p->ai_next) {
-        if ((sockfd = socket(p->ai_family, p->ai_socktype, p->ai_protocol))==-1) {
+    for (p = res; p != NULL; p = p->ai_next) 
+    {
+        if ((sockfd = socket(p->ai_family, p->ai_socktype, p->ai_protocol)) == -1) 
+        {
             perror("client: sockfd");
             continue;
         }
@@ -42,24 +47,27 @@ int main(int argc, char* argv[]) {
         break;
     }
 
-    if (p==NULL) {
+    if (!p) 
+    {
         printf("p: null pointer\n");
-        exit(-1);
+        exit(EXIT_FAILURE);
     }
 
     freeaddrinfo(res);
 
     printf("Client send message\n"); 
     
-    if (sendto(sockfd, "Hello, server!", 15, 0, p->ai_addr, p->ai_addrlen)==-1) {
+    if (sendto(sockfd, "Hello, server!", 15, 0, p->ai_addr, p->ai_addrlen) == -1) 
+    {
         perror("sendto");
-        exit(-1);
+        exit(EXIT_FAILURE);
     }
 
     char str_to[INET_ADDRSTRLEN];
-    if (inet_ntop(AF_INET, get_addr((struct sockaddr*)&p), str_to, INET_ADDRSTRLEN)==NULL) {
+    if (!inet_ntop(AF_INET, get_addr((struct sockaddr*)&p), str_to, INET_ADDRSTRLEN)) 
+    {
         perror("inet_ntop");
-        exit(-1);
+        exit(EXIT_FAILURE);
     }
 
     printf("Sending to %s terminated\n", str_to);
@@ -68,16 +76,19 @@ int main(int argc, char* argv[]) {
     socklen_t addr_size = sizeof addr_from;
     char buf[BUFSIZE];
     int numbytes;
-    if ((numbytes = recvfrom(sockfd, buf, BUFSIZE-1, 0, &addr_from, &addr_size))==-1) {
+    if ((numbytes = recvfrom(sockfd, buf, BUFSIZE-1, 0, &addr_from, &addr_size)) == -1) 
+    {
         perror("recvfrom");
-        exit(-1);
+        exit(EXIT_FAILURE);
     }
 
     char str_from[INET_ADDRSTRLEN];
-    if (inet_ntop(AF_INET, get_addr(&addr_from), str_from, INET_ADDRSTRLEN)==NULL) {
+    if (!inet_ntop(AF_INET, get_addr(&addr_from), str_from, INET_ADDRSTRLEN)) 
+    {
         perror("inet_ntop");
-        exit(-1);
+        exit(EXIT_FAILURE);
     }
+    
     buf[BUFSIZE] = '\0';
     printf("Client received from %s: %s\n", str_from, buf);
 
